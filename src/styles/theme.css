@@ -1,0 +1,108 @@
+/* The game's colours for each theme. Yellow, pink and cyan are the game's own colours
+   and stay in every theme; surfaces follow the shared palette (shared/tokens.css). */
+:root {
+  --yellow: #ffd23f;
+  --yellow-hi: #ffe07a;
+  --on-yellow: #1a1440;
+  --pink: #ff3e7f;
+  --cyan: #2ee6d6;
+  --on-cyan: #062b28;
+
+  /* text versions of the game colours, darker on White so they stay readable */
+  --gold: var(--yellow);
+  --cyan-text: var(--cyan);
+  --minus: #ffb3cf;
+  --m5-bg: #3a1f4a;
+  --p40-bg: #0f5d58;
+  --p40-fg: #c8fff9;
+  --note-bg: #3a2a00;
+  --note-fg: #ffe9a8;
+  --note-line: #7a5a00;
+  --phone: #0e1b2a;
+  --shadow: rgba(0, 0, 0, 0.5);
+}
+
+:root,
+[data-theme="midnight"] {
+  --bg: #0c0c0e;
+  --bg2: #141417;
+  --card: #1b1b20;
+  --card-hi: #26262c;
+  --line: #2e2e35;
+  --text: #f4f4f5;
+  --muted: #a1a1aa;
+  --glow: #1c2412;
+  --panel-a: #1d1d23;
+  --panel-b: #141417;
+  --panel-a-hi: #26262e;
+  --panel-b-hi: #19191d;
+  --stage-a: #1a1a1f;
+  --stage-b: #111114;
+  --used-fg: #3a3a42;
+  --used-bg: #101012;
+  --used-line: #1d1d22;
+  --header-bg: rgba(12, 12, 14, 0.7);
+  --aside-bg: rgba(20, 20, 23, 0.6);
+  --overlay: rgba(0, 0, 0, 0.82);
+  --field-bg: #101013;
+}
+
+[data-theme="navy"] {
+  --bg: #061a33;
+  --bg2: #0b2545;
+  --card: #0f2d52;
+  --card-hi: #16396a;
+  --line: #1d4270;
+  --text: #e2ecf8;
+  --muted: #a9bdd6;
+  --glow: #0d3a5c;
+  --panel-a: #11325b;
+  --panel-b: #0b2545;
+  --panel-a-hi: #163c6b;
+  --panel-b-hi: #0e2b50;
+  --stage-a: #0f2d52;
+  --stage-b: #081f3d;
+  --used-fg: #2a5180;
+  --used-bg: #071a31;
+  --used-line: #12335a;
+  --header-bg: rgba(6, 26, 51, 0.7);
+  --aside-bg: rgba(11, 37, 69, 0.6);
+  --overlay: rgba(3, 12, 26, 0.85);
+  --field-bg: #051529;
+}
+
+[data-theme="white"] {
+  --bg: #ffffff;
+  --bg2: #f8fafc;
+  --card: #f1f5f9;
+  --card-hi: #e2e8f0;
+  --line: #d9dee7;
+  --text: #111827;
+  --muted: #4b5563;
+  --glow: #eef0ff;
+  --panel-a: #ffffff;
+  --panel-b: #f1f5f9;
+  --panel-a-hi: #ffffff;
+  --panel-b-hi: #e8ecf3;
+  --stage-a: #ffffff;
+  --stage-b: #f3f5fa;
+  --used-fg: #c3c9d4;
+  --used-bg: #f1f5f9;
+  --used-line: #e5e7eb;
+  --header-bg: rgba(255, 255, 255, 0.8);
+  --aside-bg: rgba(248, 250, 252, 0.8);
+  --overlay: rgba(17, 24, 39, 0.6);
+  --field-bg: #f8fafc;
+
+  --gold: #b45309;
+  --cyan-text: #0e7490;
+  --minus: #be185d;
+  --m5-bg: #fde2ea;
+  --p40-bg: #ccfbf1;
+  --p40-fg: #115e59;
+  --note-bg: #fef3c7;
+  --note-fg: #78350f;
+  --note-line: #f59e0b;
+  --phone: #e8eef5;
+  --shadow: rgba(17, 24, 39, 0.2);
+}
