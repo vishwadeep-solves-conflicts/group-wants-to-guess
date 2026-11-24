@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Group Wants to Guess</title><meta name="description" content="A living-room party quiz for a TV or projector: four rounds, a scoreboard, timers and sounds. Edit every question; nothing leaves your browser."><meta property="og:title" content="The Group Wants to Guess"><meta property="og:description" content="A living-room party quiz for a TV or projector: four rounds, a scoreboard, timers and sounds. Edit every question; nothing leaves your browser."><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8E%89%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0c0a24; --bg2:#15123a; --card:#1d1950; --line:#2f2a73;
+  --yellow:#ffd23f; --pink:#ff3e7f; --cyan:#2ee6d6; --text:#f4f2ff; --muted:#a9a3d9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:radial-gradient(1200px 700px at 30% -10%,#2a1f7a 0%,var(--bg) 60%);color:var(--text);
+  font-family:"Space Grotesk",system-ui,sans-serif;display:grid;grid-template-rows:auto 1fr;min-height:100vh}
+button{font-family:inherit;cursor:pointer;border:0;border-radius:10px;font-weight:700;color:var(--text);background:var(--card);
+  padding:.55em 1em;font-size:15px;transition:transform .08s, background .15s}
+button:hover{background:#2a2470}
+button:active{transform:scale(.96)}
+button.primary{background:var(--yellow);color:#1a1440}
+button.primary:hover{background:#ffe07a}
+button.pink{background:var(--pink)}
+button.ghost{background:transparent;border:1px solid var(--line)}
+.display{font-family:"Archivo Black",sans-serif;letter-spacing:.01em}
+
+/* header */
+header{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line);background:rgba(12,10,36,.7);
+  backdrop-filter:blur(6px);flex-wrap:wrap;position:sticky;top:0;z-index:5}
+.logo{font-family:"Archivo Black";font-size:18px;line-height:1;white-space:nowrap}
+.logo span{color:var(--yellow)}
+nav{display:flex;gap:6px;flex-wrap:wrap}
+nav button{background:transparent;color:var(--muted);padding:.5em .85em}
+nav button.on{background:var(--card);color:var(--yellow)}
+.tools{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+.tools button{padding:.45em .75em;font-size:14px}
+
+/* layout */
+.wrap{display:grid;grid-template-columns:1fr 310px;min-height:0}
+.wrap.noscores{grid-template-columns:1fr}
+.wrap.noscores aside{display:none}
+main{padding:28px 34px;overflow:auto;display:flex;flex-direction:column}
+aside{border-left:1px solid var(--line);background:rgba(21,18,58,.6);padding:18px;overflow:auto}
+@media (max-width:900px){.wrap{grid-template-columns:1fr}aside{border-left:0;border-top:1px solid var(--line)}}
+
+.kicker{color:var(--cyan);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:14px}
+.sub{color:var(--muted);font-size:17px;margin:6px 0 0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+
+/* home */
+.hero{font-size:clamp(44px,7vw,96px);line-height:.92;margin:14px 0 10px}
+.hero em{font-style:normal;color:var(--yellow)}
+.hero b{color:var(--pink);font-weight:inherit}
+.pts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}
+@media (max-width:900px){.pts{grid-template-columns:repeat(2,1fr)}}
+.pt{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px}
+.pt .n{font-family:"Archivo Black";font-size:42px}
+.pt .l{color:var(--muted);font-size:15px}
+.rounds{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media (max-width:900px){.rounds{grid-template-columns:repeat(2,1fr)}}
+.rnd{background:linear-gradient(160deg,#241e63,#17134a);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:left;font-weight:400}
+.rnd:hover{border-color:var(--yellow);background:linear-gradient(160deg,#2c2575,#1b1652)}
+.rnd .k{color:var(--cyan);font-size:13px;letter-spacing:.12em;font-weight:700}
+.rnd .t{font-family:"Archivo Black";font-size:22px;margin:6px 0}
+.rnd .d{color:var(--muted);font-size:14px;line-height:1.4}
+
+/* question stage */
+.stagecard{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  background:linear-gradient(170deg,#221c66,#140f44);border:2px solid var(--line);border-radius:28px;padding:40px;margin:20px 0;min-height:340px;position:relative}
+.qtext{font-size:clamp(28px,3.6vw,54px);line-height:1.15;font-weight:700;max-width:1100px}
+.blank{display:inline-block;min-width:3.2em;border-bottom:.12em solid var(--yellow);margin:0 .1em}
+.answer{margin-top:30px;font-family:"Archivo Black";font-size:clamp(34px,4.6vw,70px);color:var(--yellow);animation:pop .35s ease-out}
+.twist{margin-top:10px;color:var(--cyan);font-size:20px;font-weight:700}
+.hidden-ans{margin-top:30px;color:var(--muted);font-size:18px;border:2px dashed var(--line);border-radius:14px;padding:12px 22px}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.counter{font-family:"Archivo Black";font-size:18px;color:var(--muted)}
+.hint{color:var(--muted);font-size:14px}
+kbd{background:#2a2470;border-radius:5px;padding:1px 6px;font-family:inherit;font-size:12px}
+
+/* board */
+.board{display:grid;grid-template-columns:repeat(var(--cols),1fr);gap:12px;margin-top:20px;flex:1}
+.cat{background:var(--pink);border-radius:14px;padding:16px 10px;text-align:center;font-family:"Archivo Black";font-size:clamp(16px,1.7vw,24px);
+  display:flex;align-items:center;justify-content:center;min-height:84px;text-transform:uppercase}
+.tile{background:linear-gradient(170deg,#2b2480,#1a1554);border:2px solid var(--line);border-radius:14px;font-family:"Archivo Black";
+  font-size:clamp(30px,3.4vw,52px);color:var(--yellow);min-height:110px}
+.tile:hover{border-color:var(--yellow);background:linear-gradient(170deg,#352d98,#201a66)}
+.tile.used{color:#3d3784;background:#120f38;border-color:#1e1a52}
+
+/* chat */
+.phone{background:#0e1b2a;border-radius:22px;padding:26px;max-width:780px;width:100%;text-align:left}
+.bubble{display:inline-block;background:#1f8a5b;color:#fff;font-size:clamp(24px,2.8vw,40px);padding:18px 24px;border-radius:22px 22px 22px 6px;line-height:1.25;font-weight:500}
+.sender{margin-top:20px;font-family:"Archivo Black";font-size:clamp(30px,3.6vw,56px);color:var(--yellow);animation:pop .35s ease-out}
+.note{background:#3a2a00;color:#ffe9a8;border:1px solid #7a5a00;border-radius:12px;padding:10px 14px;font-size:15px;margin-top:14px}
+
+/* final */
+.who{font-family:"Archivo Black";font-size:clamp(46px,7vw,120px);line-height:1;color:var(--yellow);animation:pop .35s ease-out}
+.who.off{color:#3d3784}
+
+/* scores */
+aside h3{margin:0 0 12px;font-family:"Archivo Black";font-size:18px;display:flex;align-items:center;gap:8px}
+.pl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:10px}
+.pl.lead{border-color:var(--yellow);box-shadow:0 0 0 1px var(--yellow) inset}
+.pl .top{display:flex;align-items:center;gap:8px}
+.pl .nm{font-weight:700;font-size:17px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl .sc{font-family:"Archivo Black";font-size:30px;transition:color .3s}
+.pl .sc.bump{color:var(--cyan)}
+.pl .btns{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}
+.pl .btns button{padding:.4em 0;font-size:14px;background:#2a2470}
+.pl .btns button.p20{background:var(--pink)}
+.pl .btns button.m5{background:#3a1f4a;color:#ffb3cf}
+.pl .btns button.p40{background:#0f5d58;color:#c8fff9}
+.undo{width:100%;margin-top:4px}
+
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(6,5,20,.82);display:none;align-items:center;justify-content:center;z-index:20;padding:30px}
+#modal.on{display:flex}
+#modal .box{background:linear-gradient(170deg,#241e6b,#130f42);border:2px solid var(--yellow);border-radius:28px;padding:40px;width:min(1100px,100%);text-align:center}
+
+/* timer */
+#timer{position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:30;display:none;background:var(--yellow);color:#1a1440;
+  font-family:"Archivo Black";font-size:46px;padding:6px 26px;border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.5);cursor:pointer}
+#timer.on{display:block}
+#timer.low{background:var(--pink);color:#fff}
+#timer.done{animation:flash .4s 4}
+@keyframes flash{50%{opacity:.2}}
+
+/* edit */
+.edit{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}
+@media (max-width:1000px){.edit{grid-template-columns:1fr}}
+.field label{font-weight:700;display:block;margin-bottom:4px}
+.field small{color:var(--muted);display:block;margin-bottom:6px}
+textarea{width:100%;min-height:200px;background:#0f0c2e;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px;
+  font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.5;resize:vertical}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#062b28;font-weight:700;padding:10px 18px;border-radius:12px;z-index:40;display:none}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">THE GROUP WANTS<br><span>TO GUESS</span></div>
+  <nav id="nav"></nav>
+  <div class="tools">
+    <button onclick="startTimer(30)" title="30 second timer">⏱ 30s</button>
+    <button onclick="startTimer(60)" title="60 second timer">⏱ 60s</button>
+    <button onclick="sfx('ding')" title="Correct sound">✅ Ding</button>
+    <button onclick="sfx('buzz')" title="Wrong sound">❌ Buzz</button>
+    <button onclick="toggleScores()" title="Show or hide the scoreboard">🏆 Scores</button>
+    <button onclick="goFull()" title="Fullscreen">⛶</button>
+  </div>
+</header>
+<div class="wrap" id="wrap">
+  <main id="stage"></main>
+  <aside id="scores"></aside>
+</div>
+<div id="modal"><div class="box" id="modalbox"></div></div>
+<div id="timer" onclick="stopTimer()"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- default content ---------------- */
+const DEFAULTS = {
+  players: ["Player 1","Player 2","Player 3","Player 4"],
+  weird: [
+    {q:"Scotland's national animal is the ___", a:"Unicorn"},
+    {q:"A group of flamingos is called a ___", a:"Flamboyance"},
+    {q:"Wombat poop comes out shaped like ___", a:"Cubes"},
+    {q:"In Shani Shingnapur, Maharashtra, houses traditionally have no ___", a:"Doors"},
+    {q:"Kodinhi, a village in Kerala, is famous for an unusually high number of ___", a:"Twins"},
+    {q:"Navapur railway station is split between Maharashtra and ___", a:"Gujarat"},
+    {q:"An octopus has ___ hearts", a:"Three"},
+    {q:"Mawsynram in Meghalaya is often called the ___ place on Earth", a:"Wettest"},
+    {q:"Botanically speaking, bananas are classified as ___", a:"Berries"},
+    {q:"The Eiffel Tower can grow about 15 cm taller in ___", a:"Summer (the metal expands)"}
+  ],
+  board: [
+    {cat:"Java", hint:"Not coding. Geography.", qs:[
+      {q:"The world's most populous island", a:"Java"},
+      {q:"Borobudur, the world's largest Buddhist temple, stands on Java. Which country is it in?", a:"Indonesia"},
+      {q:"'Java Man' fossils belong to which extinct human species?", a:"Homo erectus"}]},
+    {cat:"Mercury", hint:"Not the planet. The frontman.", qs:[
+      {q:"Freddie Mercury fronted which band?", a:"Queen"},
+      {q:"Freddie Mercury was born on which island?", a:"Zanzibar"},
+      {q:"What was Freddie Mercury's birth name?", a:"Farrokh Bulsara"}]},
+    {cat:"Big Bang", hint:"Not physics. The sitcom.", qs:[
+      {q:"Sheldon Cooper's catchphrase", a:"Bazinga!"},
+      {q:"Which Big Bang Theory character, early on, couldn't talk to women unless he'd had a drink?", a:"Raj Koothrappali"},
+      {q:"Where did Penny work as a waitress?", a:"The Cheesecake Factory"}]},
+    {cat:"Apple", hint:"Not the iPhone. The fruit.", qs:[
+      {q:"Which scientist is said to have been inspired by a falling apple?", a:"Isaac Newton"},
+      {q:"Which Swiss folk hero shot an apple off his son's head?", a:"William Tell"},
+      {q:"In the fairy tale, who gives Snow White the poisoned apple?", a:"The Evil Queen (her stepmother)"}]},
+    {cat:"Bowling", hint:"Not cricket. Ten-pin.", qs:[
+      {q:"How many pins are there in ten-pin bowling?", a:"10"},
+      {q:"Three strikes in a row is called a what?", a:"A turkey"},
+      {q:"What's the score of a perfect game?", a:"300"}]}
+  ],
+  chat: [
+    {q:"bhai 5 min mein pahunch raha hu", a:"(Edit me: whoever always says this)"},
+    {q:"guys I'm not drinking tonight, seriously", a:"(Edit me: add your friend)"},
+    {q:"who's paying for the Uber, I'll send later", a:"(Edit me: add your friend)"},
+    {q:"seen 11:47 pm", a:"(Edit me: the friend who leaves everyone on read)"}
+  ],
+  whoami: ["Shah Rukh Khan","MS Dhoni","Virat Kohli","Taylor Swift","Elon Musk","Sundar Pichai","Diljit Dosanjh","Ranveer Singh",
+    "Cristiano Ronaldo","APJ Abdul Kalam","Mr. Bean","Sachin Tendulkar","Deepika Padukone","Lionel Messi","Mukesh Ambani","Gursimran Khamba"]
+};
+
+/* ---------------- state ---------------- */
+const KEY="gwtg-v1";
+let S = {data: clone(DEFAULTS), scores:{}, used:[], history:[]};
+try{ const raw=localStorage.getItem(KEY); if(raw){ const p=JSON.parse(raw); S=Object.assign(S,p); } }catch(e){}
+let view="home", r1=0, r1show=false, r3=0, r3show=false, fi=0, fshow=false, showScores=true;
+let modalState=null;
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify({data:S.data,scores:S.scores,used:S.used,history:S.history.slice(-60)})) }catch(e){} }
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function fmtQ(s){return esc(s).replace(/_{2,}/g,'<span class="blank">&nbsp;</span>')}
+const $=id=>document.getElementById(id);
+
+/* ---------------- nav ---------------- */
+const VIEWS=[["home","Home"],["r1","1 · Weird But True"],["r2","2 · Pick Me Behaviour"],["r3","3 · Group Chat"],["final","Final · Who Am I?"],["edit","✏️ Edit"]];
+function go(v){view=v; closeModal(); render(); window.scrollTo(0,0)}
+function renderNav(){ $("nav").innerHTML=VIEWS.map(([k,l])=>`<button class="${view===k?'on':''}" onclick="go('${k}')">${l}</button>`).join("") }
+
+/* ---------------- views ---------------- */
+function render(){
+  renderNav(); renderScores();
+  const f={home:vHome,r1:vR1,r2:vR2,r3:vR3,final:vFinal,edit:vEdit}[view];
+  $("stage").innerHTML=f();
+}
+
+function vHome(){
+  return `<div class="kicker">The home edition</div>
+  <h1 class="hero display">The Group<br>Wants to <em>Guess</em><b>.</b></h1>
+  <p class="sub">The most unserious living-room quiz. Being funny is worth more than being right.</p>
+  <div class="pts">
+    <div class="pt"><div class="n" style="color:var(--yellow)">+10</div><div class="l">Correct answer</div></div>
+    <div class="pt"><div class="n" style="color:var(--pink)">+20</div><div class="l">Funniest answer (host decides)</div></div>
+    <div class="pt"><div class="n" style="color:#ffb3cf">−5</div><div class="l">Boring answer or "pass"</div></div>
+    <div class="pt"><div class="n" style="color:var(--cyan)">+40</div><div class="l">Correct guess in the final</div></div>
+  </div>
+  <div class="rounds">
+    <button class="rnd" onclick="go('r1')"><div class="k">ROUND 1</div><div class="t">Weird But True</div><div class="d">Fill in the blank. Everyone writes an answer, then reveal. Real answer +10, best fake +20.</div></button>
+    <button class="rnd" onclick="go('r2')"><div class="k">ROUND 2</div><div class="t">Pick Me Behaviour</div><div class="d">Pick a category and a value. Every category is a trap, so it's never about what it sounds like.</div></button>
+    <button class="rnd" onclick="go('r3')"><div class="k">ROUND 3</div><div class="t">Group Chat Forensics</div><div class="d">Real messages from your chat. Buzz in with who sent it. Funniest made-up backstory +20.</div></button>
+    <button class="rnd" onclick="go('final')"><div class="k">FINAL · DOUBLE POINTS</div><div class="t">Who Am I?</div><div class="d">Blindfolded, 60 seconds of yes/no questions. Everyone else may lie once. Catch the lie +10.</div></button>
+  </div>
+  <p class="hint" style="margin-top:22px">Host tips: click <b>✏️ Edit</b> to add player names and your own questions. Keys: <kbd>Space</kbd> reveal · <kbd>←</kbd><kbd>→</kbd> prev/next · <kbd>Esc</kbd> close. Buzz in with your own noise; a wrong buzz locks you out of that question.</p>`;
+}
+
+function vR1(){
+  const L=S.data.weird; if(!L.length) return empty("Round 1");
+  r1=Math.min(r1,L.length-1); const it=L[r1];
+  return `<div class="row"><div><div class="kicker">Round 1 · Weird But True</div><p class="sub">Everyone writes their answer secretly. Real answer +10 · funniest fake +20.</p></div>
+    <div class="spacer"></div><div class="counter">${r1+1} / ${L.length}</div></div>
+  <div class="stagecard"><div class="qtext">${fmtQ(it.q)}</div>
+    ${r1show?`<div class="answer">${esc(it.a)}</div>`:`<div class="hidden-ans">Answer hidden. Press <kbd>Space</kbd> to reveal</div>`}</div>
+  <div class="row"><button class="ghost" onclick="step('r1',-1)">← Prev</button><div class="spacer"></div>
+    <button onclick="startTimer(30)">⏱ 30s to write</button>
+    <button class="primary" onclick="reveal()">${r1show?'Hide':'Reveal'} answer</button><div class="spacer"></div>
+    <button class="ghost" onclick="step('r1',1)">Next →</button></div>`;
+}
+
+function vR2(){
+  const B=S.data.board; if(!B.length) return empty("Round 2");
+  const rows=Math.max(...B.map(c=>c.qs.length));
+  let cells=B.map(c=>`<div class="cat">${esc(c.cat)}</div>`).join("");
+  for(let r=0;r<rows;r++){
+    B.forEach((c,ci)=>{
+      const q=c.qs[r]; const id=ci+"-"+r;
+      cells+= q?`<button class="tile ${S.used.includes(id)?'used':''}" onclick="openTile(${ci},${r})">${(r+1)*10}</button>`:`<div></div>`;
+    });
+  }
+  return `<div class="row"><div><div class="kicker">Round 2 · Pick Me Behaviour</div><p class="sub">Players take turns picking. Every category is a misdirect. Buzz in to answer.</p></div>
+    <div class="spacer"></div><button class="ghost" onclick="resetBoard()">↺ Reset board</button></div>
+  <div class="board" style="--cols:${B.length}">${cells}</div>`;
+}
+
+function vR3(){
+  const L=S.data.chat; if(!L.length) return empty("Round 3");
+  r3=Math.min(r3,L.length-1); const it=L[r3];
+  const sample=JSON.stringify(L)===JSON.stringify(DEFAULTS.chat);
+  return `<div class="row"><div><div class="kicker">Round 3 · Group Chat Forensics</div><p class="sub">Buzz in with who sent it (+10). Funniest guess at the backstory gets +20.</p></div>
+    <div class="spacer"></div><div class="counter">${r3+1} / ${L.length}</div></div>
+  ${sample?`<div class="note">These are sample messages. Before the game, open <b>✏️ Edit</b> and paste real messages from your group chat with the sender's name. Get a quick OK from everyone before using anything too embarrassing.</div>`:""}
+  <div class="stagecard"><div class="phone"><div class="bubble">${esc(it.q)}</div>
+    ${r3show?`<div class="sender">— ${esc(it.a)}</div>`:`<div class="hidden-ans" style="text-align:center">Who sent this? Press <kbd>Space</kbd> to reveal</div>`}</div></div>
+  <div class="row"><button class="ghost" onclick="step('r3',-1)">← Prev</button><div class="spacer"></div>
+    <button class="primary" onclick="reveal()">${r3show?'Hide':'Reveal'} sender</button><div class="spacer"></div>
+    <button class="ghost" onclick="step('r3',1)">Next →</button></div>`;
+}
+
+function vFinal(){
+  const L=S.data.whoami; if(!L.length) return empty("the Final");
+  fi=Math.min(fi,L.length-1);
+  return `<div class="row"><div><div class="kicker">Final · Who Am I? · Double points</div><p class="sub">Blindfold the guesser. 60 seconds of yes/no questions. Each opponent may lie once (catch it: +10). Correct guess: +40.</p></div>
+    <div class="spacer"></div><div class="counter">${fi+1} / ${L.length}</div></div>
+  <div class="stagecard">${fshow?`<div class="who">${esc(L[fi])}</div><p class="sub" style="margin-top:18px">Make sure the guesser can't see the screen!</p>`
+      :`<div class="who off">? ? ?</div><p class="sub" style="margin-top:18px">Blindfold on? Press <kbd>Space</kbd> to show the name to everyone else.</p>`}</div>
+  <div class="row"><button class="ghost" onclick="step('final',-1)">← Prev</button><div class="spacer"></div>
+    <button class="primary" onclick="reveal()">${fshow?'Hide':'Show'} name</button>
+    <button class="pink" onclick="startTimer(60)">⏱ Start 60s</button>
+    <button onclick="shuffleWho()">🔀 Shuffle</button><div class="spacer"></div>
+    <button class="ghost" onclick="step('final',1)">Next →</button></div>`;
+}
+
+function empty(n){return `<div class="stagecard"><div class="qtext">No questions for ${n} yet.</div><p class="sub">Add some in ✏️ Edit.</p></div>`}
+
+/* ---------------- edit ---------------- */
+const pairs=L=>L.map(x=>`${x.q} | ${x.a}`).join("\n");
+function parsePairs(t){return t.split("\n").map(l=>l.trim()).filter(Boolean).map(l=>{const i=l.indexOf("|");return i<0?{q:l,a:""}:{q:l.slice(0,i).trim(),a:l.slice(i+1).trim()}})}
+function boardText(B){return B.map(c=>`## ${c.cat} | ${c.hint||""}\n`+pairs(c.qs)).join("\n\n")}
+function parseBoard(t){const out=[];let cur=null;
+  t.split("\n").map(l=>l.trim()).filter(Boolean).forEach(l=>{
+    if(l.startsWith("##")){const s=l.replace(/^#+/,"").trim();const i=s.indexOf("|");cur={cat:i<0?s:s.slice(0,i).trim(),hint:i<0?"":s.slice(i+1).trim(),qs:[]};out.push(cur)}
+    else{ if(!cur){cur={cat:"Category",hint:"",qs:[]};out.push(cur)} cur.qs.push(parsePairs(l)[0]) }
+  });return out}
+function vEdit(){
+  const d=S.data;
+  return `<div class="kicker">Host only · don't screen-share this bit</div>
+  <h2 class="display" style="font-size:40px;margin:8px 0 0">Edit the game</h2>
+  <p class="sub">Changes are saved in this browser. Use <b>|</b> to separate a question from its answer.</p>
+  <div class="edit">
+    <div class="field"><label>Players / teams</label><small>One per line.</small><textarea id="e-players" style="min-height:140px">${esc(d.players.join("\n"))}</textarea></div>
+    <div class="field"><label>Final · Who Am I? names</label><small>One per line. Add mutual friends for chaos.</small><textarea id="e-who" style="min-height:140px">${esc(d.whoami.join("\n"))}</textarea></div>
+    <div class="field"><label>Round 1 · Weird But True</label><small><code>question with ___ blank | answer</code></small><textarea id="e-weird">${esc(pairs(d.weird))}</textarea></div>
+    <div class="field"><label>Round 3 · Group Chat Forensics</label><small><code>message | who sent it</code></small><textarea id="e-chat">${esc(pairs(d.chat))}</textarea></div>
+    <div class="field" style="grid-column:1/-1"><label>Round 2 · Pick Me Behaviour board</label>
+      <small>Start each category with <code>## Category | the twist</code>, then one <code>question | answer</code> per line. The first line is worth 10, the second 20, the third 30, and so on.</small>
+      <textarea id="e-board" style="min-height:320px">${esc(boardText(d.board))}</textarea></div>
+  </div>
+  <div class="row" style="margin-top:16px">
+    <button class="primary" onclick="saveEdit()">💾 Save changes</button>
+    <button class="ghost" onclick="resetScores()">Reset all scores</button>
+    <div class="spacer"></div>
+    <button class="ghost" onclick="resetAll()">Restore default questions</button>
+  </div>`;
+}
+function saveEdit(){
+  const lines=id=>$(id).value.split("\n").map(s=>s.trim()).filter(Boolean);
+  S.data={players:lines("e-players"),whoami:lines("e-who"),weird:parsePairs($("e-weird").value),chat:parsePairs($("e-chat").value),board:parseBoard($("e-board").value)};
+  S.used=[]; save(); render(); toast("Saved ✓");
+}
+function resetAll(){S.data=clone(DEFAULTS);S.used=[];save();render();toast("Default questions restored")}
+function resetScores(){S.scores={};S.history=[];save();render();toast("Scores reset")}
+
+/* ---------------- scoreboard ---------------- */
+function renderScores(){
+  const P=S.data.players; const sc=n=>S.scores[n]||0;
+  const max=Math.max(...P.map(sc)); const anyPts=P.some(n=>sc(n)!==0);
+  $("scores").innerHTML=`<h3>🏆 Scoreboard</h3>`+P.map((n,i)=>`
+    <div class="pl ${anyPts&&sc(n)===max?'lead':''}">
+      <div class="top"><div class="nm">${anyPts&&sc(n)===max?'👑 ':''}${esc(n)}</div><div class="sc" id="sc-${i}">${sc(n)}</div></div>
+      <div class="btns">
+        <button onclick="addPts(${i},10)">+10</button><button class="p20" onclick="addPts(${i},20)">+20</button>
+        <button class="m5" onclick="addPts(${i},-5)">−5</button><button class="p40" onclick="addPts(${i},40)">+40</button>
+      </div></div>`).join("")+
+    `<button class="ghost undo" onclick="undo()" ${S.history.length?'':'disabled style="opacity:.4"'}>↶ Undo last</button>`;
+}
+function addPts(i,v){
+  const n=S.data.players[i]; S.scores[n]=(S.scores[n]||0)+v; S.history.push([n,v]); save(); renderScores();
+  const el=$("sc-"+i); if(el){el.classList.add("bump");setTimeout(()=>el.classList.remove("bump"),400)}
+  sfx(v>0?'ding':'buzz');
+}
+function undo(){const h=S.history.pop(); if(!h) return; S.scores[h[0]]=(S.scores[h[0]]||0)-h[1]; save(); renderScores()}
+function toggleScores(){showScores=!showScores; $("wrap").classList.toggle("noscores",!showScores)}
+
+/* ---------------- interactions ---------------- */
+function step(which,d){
+  if(which==="r1"){r1=(r1+d+S.data.weird.length)%S.data.weird.length;r1show=false}
+  if(which==="r3"){r3=(r3+d+S.data.chat.length)%S.data.chat.length;r3show=false}
+  if(which==="final"){fi=(fi+d+S.data.whoami.length)%S.data.whoami.length;fshow=false}
+  render();
+}
+function reveal(){
+  if(modalState){modalState.show=!modalState.show;drawModal();if(modalState.show)sfx('reveal');return}
+  if(view==="r1"){r1show=!r1show;if(r1show)sfx('reveal')}
+  else if(view==="r3"){r3show=!r3show;if(r3show)sfx('reveal')}
+  else if(view==="final"){fshow=!fshow}
+  render();
+}
+function shuffleWho(){const a=S.data.whoami;for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}fi=0;fshow=false;save();render();toast("Shuffled")}
+
+function openTile(ci,r){modalState={ci,r,show:false};drawModal();$("modal").classList.add("on")}
+function drawModal(){
+  const {ci,r,show}=modalState; const c=S.data.board[ci]; const q=c.qs[r];
+  $("modalbox").innerHTML=`<div class="row" style="justify-content:center;gap:14px"><span class="cat" style="min-height:0;padding:8px 18px">${esc(c.cat)}</span>
+      <span class="display" style="font-size:34px;color:var(--yellow)">${(r+1)*10}</span></div>
+    <div class="qtext" style="margin:34px auto 0">${fmtQ(q.q)}</div>
+    ${show?`<div class="answer">${esc(q.a)}</div>${c.hint?`<div class="twist">The twist: ${esc(c.hint)}</div>`:""}`
+      :`<div class="hidden-ans" style="display:inline-block">Press <kbd>Space</kbd> to reveal</div>`}
+    <div class="row" style="justify-content:center;margin-top:34px">
+      <button onclick="startTimer(30)">⏱ 30s</button>
+      <button class="primary" onclick="reveal()">${show?'Hide':'Reveal'} answer</button>
+      <button class="pink" onclick="doneTile()">Done ✓</button>
+      <button class="ghost" onclick="closeModal()">Close</button></div>`;
+}
+function doneTile(){const id=modalState.ci+"-"+modalState.r; if(!S.used.includes(id))S.used.push(id); save(); closeModal(); render()}
+function closeModal(){modalState=null;$("modal").classList.remove("on")}
+$("modal").addEventListener("click",e=>{if(e.target.id==="modal")closeModal()});
+function resetBoard(){S.used=[];save();render()}
+
+document.addEventListener("keydown",e=>{
+  if(["TEXTAREA","INPUT"].includes(e.target.tagName)) return;
+  if(e.key===" "||e.key==="Enter"){ if(["r1","r3","final"].includes(view)||modalState){e.preventDefault();reveal()} }
+  else if(e.key==="ArrowRight"&&!modalState&&["r1","r3","final"].includes(view)) step(view,1);
+  else if(e.key==="ArrowLeft"&&!modalState&&["r1","r3","final"].includes(view)) step(view,-1);
+  else if(e.key==="Escape"){closeModal();stopTimer()}
+});
+
+/* ---------------- timer ---------------- */
+let tInt=null,tLeft=0;
+function startTimer(s){
+  stopTimer(); tLeft=s; const el=$("timer"); el.className="on"; el.textContent=tLeft; el.title="Click to stop";
+  tInt=setInterval(()=>{tLeft--; el.textContent=tLeft;
+    if(tLeft<=10) el.classList.add("low"); if(tLeft<=5&&tLeft>0) sfx('tick');
+    if(tLeft<=0){clearInterval(tInt);tInt=null;el.textContent="TIME!";el.classList.add("done");sfx('buzz');setTimeout(()=>{if(!tInt)el.className=""},2600)}
+  },1000);
+}
+function stopTimer(){if(tInt)clearInterval(tInt);tInt=null;$("timer").className=""}
+
+/* ---------------- sound ---------------- */
+let actx=null;
+function tone(f,t0,d,type="sine",g=.18){const o=actx.createOscillator(),v=actx.createGain();o.type=type;o.frequency.value=f;
+  v.gain.setValueAtTime(g,actx.currentTime+t0);v.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+t0+d);o.connect(v).connect(actx.destination);
+  o.start(actx.currentTime+t0);o.stop(actx.currentTime+t0+d+.02)}
+function sfx(k){
+  try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==="suspended")actx.resume();
+    if(k==="ding"){tone(880,0,.18);tone(1320,.12,.3)}
+    else if(k==="buzz"){tone(110,0,.55,"sawtooth",.15);tone(116,0,.55,"square",.06)}
+    else if(k==="reveal"){tone(523,0,.12,"triangle");tone(659,.09,.12,"triangle");tone(784,.18,.25,"triangle")}
+    else if(k==="tick"){tone(1000,0,.05,"square",.05)}
+  }catch(e){}
+}
+
+/* ---------------- misc ---------------- */
+function goFull(){try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}}
+function toast(m){const t=$("toast");t.textContent=m;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>t.style.display="none",1600)}
+
+render();
+</script>
+</body>
+</html>
