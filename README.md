@@ -2,7 +2,7 @@
 
 A living-room party quiz made for a TV or a projector. Four rounds, a scoreboard, timers and sound effects, and every question is editable. Being funny is worth more than being right.
 
-**Live:** LIVE_URL
+**Live:** https://vishwadeep-solves-conflicts.github.io/group-wants-to-guess/
 
 ![The Group Wants to Guess home screen](screenshot.png)
 
